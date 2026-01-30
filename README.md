@@ -116,4 +116,11 @@ Live data fetched from:
 
 ## 📄 License
 
-MIT
+This project is licensed under the GNU General Public License v3.0.
+
+This means:
+- You can freely use, modify, and distribute this software
+- Any derivative works must also be licensed under GPLv3
+- You must disclose source code when distributing
+
+See [LICENSE](LICENSE) for full terms.
