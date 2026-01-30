@@ -85,6 +85,26 @@ export function Game({
   const streamData = localStorage.getItem("stream");
   const streamEnabled = streamData ? streamData === `unmute` : false;
 
+  let blueTeam = eventDetails.match.teams[0];
+  let redTeam = eventDetails.match.teams[1];
+
+  const auxBlueTeam = blueTeam;
+
+  /*
+        As vezes os times continuam errados mesmo apos verificar o ultimo frame,
+        em ligas como TCL, por isso fazemos essa verificação pelo nome
+    */
+  const summonerName = gameMetadata.blueTeamMetadata.participantMetadata[0].summonerName.split(" ");
+
+  if (
+    (summonerName[0] && summonerName[0].startsWith(redTeam.code)) ||
+    gameMetadata.blueTeamMetadata.esportsTeamId !== blueTeam.id
+  ) {
+    // Temos que verificar apenas os primeiros caracteres pois os times academy usam o A, a mais na tag mas não nos nomes
+    blueTeam = redTeam;
+    redTeam = auxBlueTeam;
+  }
+
   useEffect(() => {
     let currentGameState: GameState =
       GameState[lastWindowFrame.gameState as keyof typeof GameState];
@@ -134,27 +154,7 @@ export function Game({
         });
       }
     }
-  }, [lastWindowFrame.gameState, gameState]);
-
-  let blueTeam = eventDetails.match.teams[0];
-  let redTeam = eventDetails.match.teams[1];
-
-  const auxBlueTeam = blueTeam;
-
-  /*
-        As vezes os times continuam errados mesmo apos verificar o ultimo frame,
-        em ligas como TCL, por isso fazemos essa verificação pelo nome
-    */
-  const summonerName = gameMetadata.blueTeamMetadata.participantMetadata[0].summonerName.split(" ");
-
-  if (
-    (summonerName[0] && summonerName[0].startsWith(redTeam.code)) ||
-    gameMetadata.blueTeamMetadata.esportsTeamId !== blueTeam.id
-  ) {
-    // Temos que verificar apenas os primeiros caracteres pois os times academy usam o A, a mais na tag mas não nos nomes
-    blueTeam = redTeam;
-    redTeam = auxBlueTeam;
-  }
+  }, [lastWindowFrame.gameState, gameState, eventDetails.league.name, blueTeam.name, redTeam.name]);
 
   const goldPercentage = getGoldPercentage(
     lastWindowFrame.blueTeam.totalGold,

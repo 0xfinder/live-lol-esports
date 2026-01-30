@@ -4,9 +4,7 @@ import { GameMetadata, Team, WindowFrame, WindowParticipant } from "../types/bas
 
 import { useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
-import useSound from "use-sound";
 
-const firstblood = require("../../assets/audios/first_blood.ogg");
 const kill = require("../../assets/audios/champion_slain.ogg");
 const tower_blue = require("../../assets/audios/blue_turret_destroyed.ogg");
 const tower_red = require("../../assets/audios/red_turret_destroyed.ogg");
@@ -84,9 +82,6 @@ export function LiveAPIWatcher({
     },
   });
 
-  const [firstBloodPlay] = useSound(firstblood);
-  // const [initialized, setInitialized] = useState<Boolean>(false);
-
   useEffect(() => {
     const soundData = localStorage.getItem("sound");
     let isMuted = false;
@@ -100,14 +95,15 @@ export function LiveAPIWatcher({
 
     // Topo = prioridade para o som
     let isPlaying = isMuted;
-    let toastArray = [];
+    const toastArray: (() => void)[] = [];
 
     if (status.gameIndex === gameIndex) {
       if (status.inhibitors.blue !== lastWindowFrame.blueTeam.inhibitors) {
+        const currentIsPlaying = isPlaying;
         toastArray.push(() => {
           createToast(
             true,
-            isPlaying,
+            currentIsPlaying,
             inib_red.default,
             "Destroyed an inhibitor",
             trueBlueTeam.image,
@@ -117,10 +113,11 @@ export function LiveAPIWatcher({
       }
 
       if (status.inhibitors.red !== lastWindowFrame.redTeam.inhibitors) {
+        const currentIsPlaying = isPlaying;
         toastArray.push(() => {
           createToast(
             false,
-            isPlaying,
+            currentIsPlaying,
             inib_blue.default,
             "Destroyed an inhibitor",
             trueRedTeam.image,
@@ -130,10 +127,11 @@ export function LiveAPIWatcher({
       }
 
       if (status.barons.blue !== lastWindowFrame.blueTeam.barons) {
+        const currentIsPlaying = isPlaying;
         toastArray.push(() => {
           createToast(
             true,
-            isPlaying,
+            currentIsPlaying,
             baron_blue.default,
             "Defeated the baron",
             trueBlueTeam.image,
@@ -143,17 +141,19 @@ export function LiveAPIWatcher({
       }
 
       if (status.barons.red !== lastWindowFrame.redTeam.barons) {
+        const currentIsPlaying = isPlaying;
         toastArray.push(() => {
-          createToast(false, isPlaying, baron_red.default, "Defeated the baron", trueRedTeam.image);
+          createToast(false, currentIsPlaying, baron_red.default, "Defeated the baron", trueRedTeam.image);
         });
         isPlaying = true;
       }
 
       if (status.dragons.blue !== lastWindowFrame.blueTeam.dragons.length) {
+        const currentIsPlaying = isPlaying;
         toastArray.push(() => {
           createToast(
             true,
-            isPlaying,
+            currentIsPlaying,
             dragon_blue.default,
             "Defeated the dragon",
             trueBlueTeam.image,
@@ -163,10 +163,11 @@ export function LiveAPIWatcher({
       }
 
       if (status.dragons.red !== lastWindowFrame.redTeam.dragons.length) {
+        const currentIsPlaying = isPlaying;
         toastArray.push(() => {
           createToast(
             false,
-            isPlaying,
+            currentIsPlaying,
             dragon_red.default,
             "Defeated the dragon",
             trueRedTeam.image,
@@ -176,17 +177,19 @@ export function LiveAPIWatcher({
       }
 
       if (status.towers.blue !== lastWindowFrame.blueTeam.towers) {
+        const currentIsPlaying = isPlaying;
         toastArray.push(() => {
-          createToast(true, isPlaying, tower_red.default, "Destroyed a turret", trueBlueTeam.image);
+          createToast(true, currentIsPlaying, tower_red.default, "Destroyed a turret", trueBlueTeam.image);
         });
         isPlaying = true;
       }
 
       if (status.towers.red !== lastWindowFrame.redTeam.towers) {
+        const currentIsPlaying = isPlaying;
         toastArray.push(() => {
           createToast(
             false,
-            isPlaying,
+            currentIsPlaying,
             tower_blue.default,
             "Destroyed a turret",
             trueRedTeam.image,
@@ -197,10 +200,11 @@ export function LiveAPIWatcher({
 
       for (let i = 0; i < status.participants.blue.length; i++) {
         if (status.participants.blue[i].kills !== lastWindowFrame.blueTeam.participants[i].kills) {
+          const currentIsPlaying = isPlaying;
           toastArray.push(() => {
             createToast(
               true,
-              isPlaying,
+              currentIsPlaying,
               kill.default,
               "Killed an enemy",
               `${championsUrlWithPatchVersion}${gameMetadata.blueTeamMetadata.participantMetadata[status.participants.blue[i].participantId - 1].championId}.png`,
@@ -213,10 +217,11 @@ export function LiveAPIWatcher({
 
       for (let i = 0; i < status.participants.red.length; i++) {
         if (status.participants.red[i].kills !== lastWindowFrame.redTeam.participants[i].kills) {
+          const currentIsPlaying = isPlaying;
           toastArray.push(() => {
             createToast(
               false,
-              isPlaying,
+              currentIsPlaying,
               kill.default,
               "Killed an enemy",
               `${championsUrlWithPatchVersion}${gameMetadata.redTeamMetadata.participantMetadata[status.participants.red[i].participantId - 6].championId}.png`,
@@ -246,15 +251,14 @@ export function LiveAPIWatcher({
       },
     });
 
-    toastArray.forEach((toastFunction) => toastFunction());
+    for (const toastFunction of toastArray) {
+      toastFunction();
+    }
   }, [
-    lastWindowFrame.blueTeam.totalKills,
     lastWindowFrame.blueTeam.dragons.length,
     lastWindowFrame.blueTeam.inhibitors,
-    lastWindowFrame.redTeam.totalKills,
     lastWindowFrame.redTeam.dragons.length,
     lastWindowFrame.redTeam.inhibitors,
-    firstBloodPlay,
     status.dragons.blue,
     status.dragons.red,
     status.barons.blue,
@@ -275,6 +279,9 @@ export function LiveAPIWatcher({
     gameMetadata.redTeamMetadata.participantMetadata,
     trueBlueTeam.image,
     trueRedTeam.image,
+    championsUrlWithPatchVersion,
+    status.gameIndex,
+    gameIndex,
   ]);
 
   return <ToastContainer limit={10} />;

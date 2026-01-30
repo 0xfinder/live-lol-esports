@@ -66,7 +66,7 @@ export function Match({ match }: any) {
       setRunes(undefined);
     }
     setPreviousGameIndex(gameIndex);
-  }, [gameIndex]);
+  }, [gameIndex, previousGameIndex]);
   const chatEnabled = chatData ? chatData === `unmute` : false;
   const streamData = localStorage.getItem("stream");
   const streamEnabled = streamData ? streamData === `unmute` : false;
@@ -300,6 +300,7 @@ export function Match({ match }: any) {
         setRunes(response.data);
       });
     }
+    // eslint-disable-next-line
   }, [matchId]);
 
   function capitalizeFirstLetter(string: string) {
