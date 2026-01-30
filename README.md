@@ -17,8 +17,8 @@ Real-time League of Legends esports match tracker with live stats, standings, an
 
 ## 👥 Credits
 
-Forked from [Aureom/live-lol-esports](https://github.com/Aureom/live-lol-esports)  
-Inspired by earlier work from [AndyDanger](https://github.com/AndyDanger/live-lol-esports)
+Forked from [AndyDanger/live-lol-esports](https://github.com/AndyDanger/live-lol-esports)  
+Inspired by earlier work from [Aureom](https://github.com/Aureom/live-lol-esports)
 
 ## 🚀 Getting Started
 
