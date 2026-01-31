@@ -6,6 +6,7 @@ import { HashRouter, Switch, Route, Redirect } from "react-router-dom";
 import { Footer } from "./components/Footer/Footer";
 import { EventsSchedule } from "./components/Schedule/EventsSchedule";
 import { Navbar } from "./components/Navbar/Navbar";
+import { Sidebar } from "./components/Sidebar/Sidebar";
 import { useTheme } from "./theme/ThemeContext";
 import React from "react";
 
@@ -15,6 +16,7 @@ function App() {
   return (
     <HashRouter basename="/">
       <div className="theme-container" style={{ ...(theme as React.CSSProperties) }}>
+        <Sidebar />
         <Navbar />
         <div className="container">
           <Switch>
